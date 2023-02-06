@@ -1,13 +1,4 @@
-// ---------------------------------------------------
-// Step 01 - Monolitic template (scope ResourceGroup)
-// ---------------------------------------------------
-
 // Parameters
-
-@minLength(3)
-@maxLength(6)
-@description('The name of the environment. You can use a string from 3 to 6 character lenght.')
-param environmentName string = 'DOT'
 
 @allowed([
   'dev'
@@ -20,15 +11,22 @@ param environmentType string
 @description('Location for the environment')
 param location string = resourceGroup().location
 
+@description('Web app name')
+param appServiceName string
+
+@description('App Service Plan name')
+param appServicePlanName string
+
+@description('Application Insight name')
+param appInsightName string
+
+@description('Primary storage name')
+param primaryStorageName string
+
+@description('Secondary storage name')
+param secondaryStorageName string
+
 // Variables
-var resourceNamePrefix = '${environmentName}${environmentType}${substring(uniqueString(environmentName, environmentType), 0, 10)}'
-
-var webAppName = '${resourceNamePrefix}-app'
-var webAppPlanName = '${resourceNamePrefix}-plan'
-var appInsightName = '${resourceNamePrefix}-appinsight'
-var primaryStorageName = toLower('${resourceNamePrefix}s1')
-var secondaryStorageName = toLower('${resourceNamePrefix}s2')
-
 var appPlanConfigurationMap = {
   prod: {
     appServicePlan: {
@@ -58,7 +56,7 @@ var appPlanConfigurationMap = {
 
 // Resources
 resource webApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: webAppName
+  name: appServiceName
   location: location
   kind: 'app'
   properties: {
@@ -67,7 +65,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
 }
 
 resource webAppPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: webAppPlanName
+  name: appServicePlanName
   location: location
   kind: 'app'
   sku: appPlanConfigurationMap[environmentType].appServicePlan.sku
@@ -83,31 +81,17 @@ resource appSettings 'Microsoft.Web/sites/config@2022-03-01' = {
   }
 }
 
-resource appInsight 'Microsoft.Insights/components@2020-02-02' = if (environmentType == 'prod') {
+resource appInsight 'Microsoft.Insights/components@2020-02-02' existing = if (environmentType == 'prod') {
   name: appInsightName
-  location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-  }
 }
 
-resource primaryStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+resource primaryStorage 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: primaryStorageName
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
-  }
 }
 
-resource secondaryStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = if (environmentType == 'prod') {
+resource secondaryStorage 'Microsoft.Storage/storageAccounts@2022-09-01' existing = if (environmentType == 'prod') {
   name: secondaryStorageName
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: 'Standard_LRS'
-  }
 }
+
 
 output webAppUrl string = webApp.properties.defaultHostName

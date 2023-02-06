@@ -1,7 +1,3 @@
-// ---------------------------------------------------
-// Step 01 - Monolitic template (scope ResourceGroup)
-// ---------------------------------------------------
-
 // Parameters
 
 @minLength(3)
@@ -20,14 +16,20 @@ param environmentType string
 @description('Location for the environment')
 param location string = resourceGroup().location
 
+@description('Application Insight instrumentation key')
+param appInsightInstumentationkey string
+
+@description('Primary storage connection string')
+param primaryStorageConnectionString string
+
+@description('Secondary storage connection string')
+param secondaryStorageConnectionString string
+
 // Variables
 var resourceNamePrefix = '${environmentName}${environmentType}${substring(uniqueString(environmentName, environmentType), 0, 10)}'
 
 var webAppName = '${resourceNamePrefix}-app'
 var webAppPlanName = '${resourceNamePrefix}-plan'
-var appInsightName = '${resourceNamePrefix}-appinsight'
-var primaryStorageName = toLower('${resourceNamePrefix}s1')
-var secondaryStorageName = toLower('${resourceNamePrefix}s2')
 
 var appPlanConfigurationMap = {
   prod: {
@@ -77,36 +79,9 @@ resource appSettings 'Microsoft.Web/sites/config@2022-03-01' = {
   name: 'appsettings'
   parent: webApp
   properties: {
-    APPINSIGHTS_INSTRUMENTATIONKEY: (environmentType != 'prod') ? '' : appInsight.properties.InstrumentationKey
-    PrimaryStorageConnection : 'DefaultEndpointsProtocol=https;AccountName=${primaryStorage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${primaryStorage.listKeys().keys[0].value}'
-    SecondaryStorageConnections: (environmentType != 'prod') ? '' : 'DefaultEndpointsProtocol=https;AccountName=${secondaryStorage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${secondaryStorage.listKeys().keys[0].value}'
-  }
-}
-
-resource appInsight 'Microsoft.Insights/components@2020-02-02' = if (environmentType == 'prod') {
-  name: appInsightName
-  location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-  }
-}
-
-resource primaryStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: primaryStorageName
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
-  }
-}
-
-resource secondaryStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = if (environmentType == 'prod') {
-  name: secondaryStorageName
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: 'Standard_LRS'
+    APPINSIGHTS_INSTRUMENTATIONKEY: (environmentType != 'prod') ? '' : appInsightInstumentationkey
+    PrimaryStorageConnection : primaryStorageConnectionString
+    SecondaryStorageConnections: (environmentType != 'prod') ? '' : secondaryStorageConnectionString
   }
 }
 
