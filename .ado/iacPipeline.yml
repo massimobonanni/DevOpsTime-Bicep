@@ -10,9 +10,8 @@ variables:
   templateFile: '03-main'
   outDir: './out'
   azureLocation: 'northeurope'
-  buildName: $(Date:yyyyMMdd)$(Rev:.r)
   
-name: $(buildName)
+name: $(Date:yyyyMMdd)$(Rev:.r)
 
 stages:
 - stage: Build
@@ -67,4 +66,4 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
-          az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
