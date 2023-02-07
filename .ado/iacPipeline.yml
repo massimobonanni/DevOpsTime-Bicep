@@ -4,7 +4,7 @@ trigger:
      - main
 
 variables:
-  vmImageName: 'ubuntu'
+  vmImageName: 'ubuntu-latest'
   azureSubscription: 'DeployConnection'
   templatePath: './03 - Modules'
   templateFile: '/03-main.bicep'
