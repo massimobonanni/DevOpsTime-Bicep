@@ -38,7 +38,9 @@ jobs:
 
   deployOnDev:
     runs-on: ubuntu-latest
+    
     needs: build
+    
     env:
       AZURE_CREDENTIAL: ${{ secrets.AZURE_CREDENTIAL }}
       RESOURCEGROUP_NAME: 'DevOpsTimeGH-rg'
@@ -56,7 +58,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ AZURE_CREDENTIAL }}
+          creds: ${{ env.AZURE_CREDENTIAL }}
       
       - name: Validate ARM Template
         run: |
