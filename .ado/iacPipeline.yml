@@ -35,7 +35,7 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(outdir)'
-        ArtifactName: 'IaC-YAML'
+        ArtifactName: 'ARMTemplate'
         publishLocation: 'Container'
 
 - stage: DeployToDev
@@ -55,7 +55,7 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@1
       inputs:
-        artifactName: '$(templateFile).json'
+        artifactName: 'ARMTemplate'
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(Build.ArtifactStagingDirectory)'
@@ -66,6 +66,5 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          echo '$(Build.ArtifactStagingDirectory)/$(templateFile).json'
-          ls '$(Build.ArtifactStagingDirectory)'
-          az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactStagingDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
+          az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
