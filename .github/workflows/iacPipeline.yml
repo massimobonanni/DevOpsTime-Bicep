@@ -6,7 +6,7 @@ on:
       
 env: 
   BICEP_PROJECT_PATH: '${{ github.workspace }}/03 - Modules'
-  BICEP_MAIN_TEMPLATE: 'main.bicep'
+  BICEP_MAIN_TEMPLATE: '03-main.bicep'
   BUILD_OUTPUT_PATH: '${{ github.workspace }}/build-artifacts'
   DEPLOY_LOCATION: 'northeurope'
   
