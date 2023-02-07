@@ -66,8 +66,4 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az deployment group create `
-          --name '$(deloymentName)' `
-          --template-file '$(System.ArtifactsDirectory)/$(templateFile)' `
-          --resource-group $(resourceGroupName) `
-          --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create --name '$(deloymentName)' --template-file '$(System.ArtifactsDirectory)/$(templateFile)' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
