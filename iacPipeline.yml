@@ -1,0 +1,42 @@
+trigger:
+ branches:
+  include:
+     - main
+ paths:
+  include:
+   - AZ400Demo.IaC
+
+variables:
+  vmImageName: 'windows-2022'
+  azureSubscription: 'MSDN Ultimate Connection'
+  templateFile: './AZ400Demo.IaC/EnvironmentTemplate.bicep'
+  outDir: './AZ400Demo.IaC/out'
+  azureLocation: 'northeurope'
+  
+name: $(Date:yyyy.MM.dd)$(Rev:.r)
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildAndTest
+    displayName: 'Build'
+    pool:
+      vmImage: $(vmImageName)
+    
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          mkdir $(outdir)
+          az --version
+          az bicep install
+          az bicep build --file $(templateFile) --outdir $(outdir)
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(outdir)'
+        ArtifactName: 'IaC-YAML'
+        publishLocation: 'Container'
