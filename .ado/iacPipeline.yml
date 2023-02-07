@@ -30,8 +30,6 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           mkdir $(outdir)
-          az --version
-          az bicep install
           az bicep build --file '$(templatePath)/$(templateFile)' --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
@@ -61,18 +59,15 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(System.ArtifactsDirectory)'
-        
-    - task: AzureResourceManagerTemplateDeployment@3
+
+    - task: AzureCLI@2
       inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: 'DeployConnection'
-        subscriptionId: '02e4a7f0-e0bc-4ae8-8fa8-73f1686fb788'
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: '$(resourceGroupName)'
-        location: 'North Europe'
-        templateLocation: 'Linked artifact'
-        csmFile: '$(System.ArtifactsDirectory)/$(templateFile)'
-        overrideParameters: '-environmentType $(deployEnvironmentType)'
-        deploymentMode: 'Incremental'
-        deploymentName: '$(deloymentName)'
-    
+        azureSubscription: 'DeployConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group create `
+          --name '$(deloymentName)' `
+          --template-file '$(System.ArtifactsDirectory)/$(templateFile)' `
+          --resource-group $(resourceGroupName) `
+          --parameters environmentType=$(deployEnvironmentType)
