@@ -111,3 +111,41 @@ jobs:
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+
+  deployOnProduction:
+    runs-on: ubuntu-latest
+    
+    environment: Production
+        
+    needs: deployOnTest
+       
+    env:
+      AZURE_CREDENTIAL: ${{ secrets.AZURE_CREDENTIAL }}
+      RESOURCEGROUP_NAME: 'DevopsTimeGH-prod-rg'
+      DEPLOY_ENVIRONMENT_TYPE: 'prod'
+      DEPLOYMENT_NAME: ${{ github.run_id }}
+
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: build_artifacts
+          path: ${{ env.BUILD_OUTPUT_PATH }}
+      
+      - name: Install Azure CLI
+        run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIAL }}
+      
+      - name: Validate ARM Template
+        run: |
+          cd ${{ env.BUILD_OUTPUT_PATH }} 
+          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          
+      - name: Deploy ARM Template
+        run: |
+          cd ${{ env.BUILD_OUTPUT_PATH }} 
+          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
