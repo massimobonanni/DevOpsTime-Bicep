@@ -7,7 +7,7 @@ variables:
   vmImageName: 'ubuntu-latest'
   azureSubscription: 'DeployConnection'
   templatePath: './03 - Modules'
-  templateFile: '/03-main'
+  templateFile: '03-main'
   outDir: './out'
   azureLocation: 'northeurope'
   buildName: $(Date:yyyyMMdd)$(Rev:.r)
@@ -58,7 +58,7 @@ stages:
         artifactName: 'IaC-YAML'
         buildType: 'current'
         downloadType: 'single'
-        downloadPath: '$(System.ArtifactsDirectory)'
+        downloadPath: '$(Build.ArtifactsDirectory)'
 
     - task: AzureCLI@2
       inputs:
@@ -66,4 +66,4 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az deployment group create --name '$(deloymentName)' --template-file '$(System.ArtifactsDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactsDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
