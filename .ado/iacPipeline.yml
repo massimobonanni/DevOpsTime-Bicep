@@ -55,7 +55,7 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@1
       inputs:
-        artifactName: 'IaC-YAML'
+        artifactName: '$(templateFile).json'
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(Build.ArtifactStagingDirectory)'
