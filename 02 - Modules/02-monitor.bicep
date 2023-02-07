@@ -17,7 +17,7 @@ param environmentType string
 param location string = resourceGroup().location
 
 // Variables
-var resourceNamePrefix = '${environmentName}${environmentType}${substring(uniqueString(environmentName, environmentType), 0, 10)}'
+var resourceNamePrefix = '${environmentName}${environmentType}${substring(uniqueString(resourceGroup().id), 0, 10)}'
 
 var appInsightName = '${resourceNamePrefix}-appinsight'
 

@@ -26,7 +26,7 @@ param primaryStorageConnectionString string
 param secondaryStorageConnectionString string
 
 // Variables
-var resourceNamePrefix = '${environmentName}${environmentType}${substring(uniqueString(environmentName, environmentType), 0, 10)}'
+var resourceNamePrefix = '${environmentName}${environmentType}${substring(uniqueString(resourceGroup().id), 0, 10)}'
 
 var webAppName = '${resourceNamePrefix}-app'
 var webAppPlanName = '${resourceNamePrefix}-plan'
