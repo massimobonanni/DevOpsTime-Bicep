@@ -42,7 +42,7 @@ stages:
 
 - stage: DeployToDev
   variables:
-    resourceGroupName: 'devopsTimeADO-dev-rg'
+    resourceGroupName: 'DevopsTimeADO-dev-rg'
     deployEnvironmentType: 'dev'
     deloymentName: $(buildName)
   
@@ -68,10 +68,11 @@ stages:
         azureResourceManagerConnection: 'DeployConnection'
         subscriptionId: '02e4a7f0-e0bc-4ae8-8fa8-73f1686fb788'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: 'DevopsTimeADO-dev-rg'
+        resourceGroupName: '$(resourceGroupName)'
         location: 'North Europe'
         templateLocation: 'Linked artifact'
         csmFile: '$(System.ArtifactsDirectory)/$(templateFile)'
         overrideParameters: '-environmentType $(deployEnvironmentType)'
         deploymentMode: 'Incremental'
+        deploymentName: '$(deloymentName)'
     
