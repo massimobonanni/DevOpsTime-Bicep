@@ -66,4 +66,6 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
+          echo '$(Build.ArtifactStagingDirectory)/$(templateFile).json'
+          ls '$(Build.ArtifactStagingDirectory)'
           az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactStagingDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
