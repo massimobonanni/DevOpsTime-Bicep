@@ -1,0 +1,73 @@
+name: CI/CD on IaC
+
+on:
+  workflow_dispatch:
+
+      
+env: 
+  BICEP_PROJECT_PATH: '${{ github.workspace }}/03 - Modules'
+  BICEP_MAIN_TEMPLATE: 'main.bicep'
+  BUILD_OUTPUT_PATH: '${{ github.workspace }}/build-artifacts'
+  DEPLOY_LOCATION: 'northeurope'
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Azure CLI
+        run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Install BICEP module
+        run: az bicep install
+        
+      - name: Build BICEP template
+        run: |
+          mkdir ${{ env.BUILD_OUTPUT_PATH }}
+          cd ${{ env.BUILD_OUTPUT_PATH }}
+          az bicep build --file ${{ env.BICEP_PROJECT_PATH }}/${{ env.BICEP_MAIN_TEMPLATE }} --outfile main.json
+      
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: build_artifacts
+          path: ${{ env.BUILD_OUTPUT_PATH }}
+          if-no-files-found: error
+
+  deployOnDev:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      AZURE_CREDENTIAL: ${{ secrets.AZURE_CREDENTIAL }}
+      RESOURCEGROUP_NAME: 'DevOpsTimeGH-rg'
+      DEPLOY_ENVIRONMENT_TYPE: 'dev'
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: build_artifacts
+          path: ${{ env.BUILD_OUTPUT_PATH }}
+      
+      - name: Install Azure CLI
+        run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ AZURE_CREDENTIAL }}
+      
+      - name: Validate ARM Template
+        run: |
+          cd ${{ env.BUILD_OUTPUT_PATH }} 
+          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.deploymentName }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+        env:
+          deploymentName: ${{ github.run_id }}
+          
+      - name: Deploy ARM Template
+        run: |
+          cd ${{ env.BUILD_OUTPUT_PATH }} 
+          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.deploymentName }}
+        env:
+          deploymentName: ${{ github.run_id }}
