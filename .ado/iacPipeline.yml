@@ -2,18 +2,16 @@ trigger:
  branches:
   include:
      - main
- paths:
-  include:
-   - AZ400Demo.IaC
 
 variables:
   vmImageName: 'windows-2022'
-  azureSubscription: 'MSDN Ultimate Connection'
-  templateFile: './AZ400Demo.IaC/EnvironmentTemplate.bicep'
-  outDir: './AZ400Demo.IaC/out'
+  azureSubscription: 'DeployConnection'
+  templateFile: './03 - Modules/03-main.bicep'
+  outDir: './out'
   azureLocation: 'northeurope'
+  buildName: $(Date:yyyy.MM.dd)$(Rev:.r)
   
-name: $(Date:yyyy.MM.dd)$(Rev:.r)
+name: $(buildName)
 
 stages:
 - stage: Build
