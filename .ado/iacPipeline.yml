@@ -31,7 +31,7 @@ stages:
           mkdir $(outdir)
           az --version
           az bicep install
-          az bicep build --file $(templateFile) --outdir $(outdir)
+          az bicep build --file '$(templateFile)' --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
       inputs:
