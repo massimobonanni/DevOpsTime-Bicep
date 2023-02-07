@@ -45,6 +45,8 @@ jobs:
       AZURE_CREDENTIAL: ${{ secrets.AZURE_CREDENTIAL }}
       RESOURCEGROUP_NAME: 'DevOpsTimeGH-rg'
       DEPLOY_ENVIRONMENT_TYPE: 'dev'
+      DEPLOYMENT_NAME: ${{ github.run_id }}
+
     steps:
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3.0.0
@@ -63,13 +65,9 @@ jobs:
       - name: Validate ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.deploymentName }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
-        env:
-          deploymentName: ${{ github.run_id }}
+          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.deploymentName }}
-        env:
-          deploymentName: ${{ github.run_id }}
+          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
