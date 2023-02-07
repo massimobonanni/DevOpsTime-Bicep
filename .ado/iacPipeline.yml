@@ -2,18 +2,16 @@ trigger:
  branches:
   include:
      - main
- paths:
-  include:
-   - AZ400Demo.IaC
 
 variables:
-  vmImageName: 'windows-2022'
-  azureSubscription: 'MSDN Ultimate Connection'
-  templateFile: './AZ400Demo.IaC/EnvironmentTemplate.bicep'
-  outDir: './AZ400Demo.IaC/out'
+  vmImageName: 'ubuntu-latest'
+  azureSubscription: 'DeployConnection'
+  templatePath: './03 - Modules'
+  templateFile: '03-main'
+  outDir: './out'
   azureLocation: 'northeurope'
   
-name: $(Date:yyyy.MM.dd)$(Rev:.r)
+name: $(Date:yyyyMMdd)$(Rev:.r)
 
 stages:
 - stage: Build
@@ -31,12 +29,41 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           mkdir $(outdir)
-          az --version
-          az bicep install
-          az bicep build --file $(templateFile) --outdir $(outdir)
+          az bicep build --file '$(templatePath)/$(templateFile).bicep' --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(outdir)'
-        ArtifactName: 'IaC-YAML'
+        ArtifactName: 'ARMTemplate'
         publishLocation: 'Container'
+
+- stage: DeployToDev
+  variables:
+    resourceGroupName: 'DevopsTimeADO-dev-rg'
+    deployEnvironmentType: 'dev'
+    deloymentName: $(buildName)
+  
+  dependsOn: 
+    Build
+
+  jobs:
+  - job: DeployToDev
+    displayName: 'Deploy to dev environment'
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        artifactName: 'ARMTemplate'
+        buildType: 'current'
+        downloadType: 'single'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'DeployConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
+          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
