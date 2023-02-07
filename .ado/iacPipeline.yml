@@ -58,7 +58,7 @@ stages:
         artifactName: 'IaC-YAML'
         buildType: 'current'
         downloadType: 'single'
-        downloadPath: '$(Build.ArtifactsDirectory)'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
 
     - task: AzureCLI@2
       inputs:
@@ -66,4 +66,4 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactsDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create --name '$(deloymentName)' --template-file '$(Build.ArtifactStagingDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
