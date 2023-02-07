@@ -7,7 +7,7 @@ variables:
   vmImageName: 'ubuntu-latest'
   azureSubscription: 'DeployConnection'
   templatePath: './03 - Modules'
-  templateFile: '/03-main.bicep'
+  templateFile: '/03-main'
   outDir: './out'
   azureLocation: 'northeurope'
   buildName: $(Date:yyyyMMdd)$(Rev:.r)
@@ -30,7 +30,7 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           mkdir $(outdir)
-          az bicep build --file '$(templatePath)/$(templateFile)' --outdir '$(outdir)'
+          az bicep build --file '$(templatePath)/$(templateFile).bicep' --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
       inputs:
@@ -66,4 +66,4 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az deployment group create --name '$(deloymentName)' --template-file '$(System.ArtifactsDirectory)/$(templateFile)' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create --name '$(deloymentName)' --template-file '$(System.ArtifactsDirectory)/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
