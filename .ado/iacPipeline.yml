@@ -4,12 +4,13 @@ trigger:
      - main
 
 variables:
-  vmImageName: 'windows-2022'
+  vmImageName: 'ubuntu'
   azureSubscription: 'DeployConnection'
-  templateFile: './03 - Modules/03-main.bicep'
+  templatePath: './03 - Modules'
+  templateFile: '/03-main.bicep'
   outDir: './out'
   azureLocation: 'northeurope'
-  buildName: $(Date:yyyy.MM.dd)$(Rev:.r)
+  buildName: $(Date:yyyyMMdd)$(Rev:.r)
   
 name: $(buildName)
 
@@ -31,10 +32,46 @@ stages:
           mkdir $(outdir)
           az --version
           az bicep install
-          az bicep build --file '$(templateFile)' --outdir '$(outdir)'
+          az bicep build --file '$(templatePath)/$(templateFile)' --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(outdir)'
         ArtifactName: 'IaC-YAML'
         publishLocation: 'Container'
+
+- stage: DeployToDev
+  variables:
+    resourceGroupName: 'devopsTimeADO-dev-rg'
+    deployEnvironmentType: 'dev'
+    deloymentName: $(buildName)
+  
+  dependsOn: 
+    Build
+
+  jobs:
+  - job: DeployToDev
+    displayName: 'Deploy to dev environment'
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        artifactName: 'IaC-YAML'
+        buildType: 'current'
+        downloadType: 'single'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        
+    - task: AzureResourceManagerTemplateDeployment@3
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: 'DeployConnection'
+        subscriptionId: '02e4a7f0-e0bc-4ae8-8fa8-73f1686fb788'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'DevopsTimeADO-dev-rg'
+        location: 'North Europe'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(System.ArtifactsDirectory)/$(templateFile)'
+        overrideParameters: '-environmentType $(deployEnvironmentType)'
+        deploymentMode: 'Incremental'
+    
