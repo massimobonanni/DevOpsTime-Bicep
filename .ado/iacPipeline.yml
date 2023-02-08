@@ -42,13 +42,84 @@ stages:
     resourceGroupName: 'DevopsTimeADO-dev-rg'
     deployEnvironmentType: 'dev'
     deloymentName: $(buildName)
-  
+
   dependsOn: 
     Build
 
   jobs:
-  - job: DeployToDev
+  - deployment : DevEnvironment
+    environment: Dev
+    
+  - job:
     displayName: 'Deploy to dev environment'
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        artifactName: 'ARMTemplate'
+        buildType: 'current'
+        downloadType: 'single'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'DeployConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
+          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+
+- stage: DeployToTest
+  variables:
+    resourceGroupName: 'DevopsTimeADO-test-rg'
+    deployEnvironmentType: 'test'
+    deloymentName: $(buildName)
+  
+  dependsOn: 
+    DeployToDev
+
+  jobs:
+  - deployment : TestEnvironment
+    environment: Test
+
+  - job: DeployToTest
+    displayName: 'Deploy to test environment'
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        artifactName: 'ARMTemplate'
+        buildType: 'current'
+        downloadType: 'single'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'DeployConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
+          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+
+- stage: DeployToProd
+  variables:
+    resourceGroupName: 'DevopsTimeADO-prod-rg'
+    deployEnvironmentType: 'prod'
+    deloymentName: $(buildName)
+  
+  dependsOn: 
+    DeployToDev
+
+  jobs:
+  - deployment : ProdEnvironment
+    environment: Production
+
+  - job: DeployToProd
+    displayName: 'Deploy to prod environment'
     pool:
       vmImage: $(vmImageName)
     steps:
