@@ -112,7 +112,7 @@ stages:
     deloymentName: $(buildName)
   
   dependsOn: 
-    DeployToDev
+    DeployToTest
 
   jobs:
   - deployment : ProdEnvironment
