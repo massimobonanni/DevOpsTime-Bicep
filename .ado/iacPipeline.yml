@@ -95,16 +95,20 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(Build.ArtifactStagingDirectory)'
-
-    - task: AzureCLI@2
+    - task: AzureResourceManagerTemplateDeployment@3
       inputs:
-        azureSubscription: 'DeployConnection'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
-          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
-
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: 'DeployConnection'
+        subscriptionId: '02e4a7f0-e0bc-4ae8-8fa8-73f1686fb788'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'DevopsTimeADO-test-rg'
+        location: 'North Europe'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json'
+        overrideParameters: '-environmentType $(deployEnvironmentType)'
+        deploymentMode: 'Incremental'
+        deploymentName: '$(Build.BuildId)'
+    
 - stage: DeployToProd
   variables:
     resourceGroupName: 'DevopsTimeADO-prod-rg'
