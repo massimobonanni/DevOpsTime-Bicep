@@ -69,15 +69,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ env.AZURE_CREDENTIAL }}
-      
-      - name: Validate ARM Template deployment
-        run: |
-          ls ${{ env.BUILD_OUTPUT_PATH }}
-          echo '${{ env.BUILD_OUTPUT_PATH }}/main.json'
-          az deployment group validate \
-            --resource-group ${{ env.RESOURCEGROUP_NAME }} \ 
-            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
-            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
@@ -115,13 +106,6 @@ jobs:
         with:
           creds: ${{ env.AZURE_CREDENTIAL }}
       
-      - name: Validate ARM Template
-        run: |
-          az deployment group validate \
-            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
-            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
-          
       - name: Deploy ARM Template
         run: |
           az deployment group create \
@@ -157,13 +141,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ env.AZURE_CREDENTIAL }}
-      
-      - name: Validate ARM Template
-        run: |
-          az deployment group validate \
-            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
-            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
