@@ -73,7 +73,6 @@ jobs:
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \ 
             --template-file main.json \
-            --name ${{ env.DEPLOYMENT_NAME }} \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
@@ -119,7 +118,6 @@ jobs:
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
             --template-file main.json \
-            --name ${{ env.DEPLOYMENT_NAME }} \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
@@ -165,7 +163,6 @@ jobs:
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
             --template-file main.json \
-            --name ${{ env.DEPLOYMENT_NAME }} \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
