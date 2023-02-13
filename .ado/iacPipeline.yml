@@ -23,6 +23,17 @@ stages:
     
     steps:
     - task: AzureCLI@2
+      name: 'Validate Bicep tamplate'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          mkdir $(outdir)
+          az bicep validate --file '$(templatePath)/$(templateFile).bicep'
+
+    - task: AzureCLI@2
+      name: 'Build ARM template'
       inputs:
         azureSubscription: $(azureSubscription)
         scriptType: bash
@@ -32,6 +43,7 @@ stages:
           az bicep build --file '$(templatePath)/$(templateFile).bicep' --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
+      name: 'Publish ARM template as artifact'
       inputs:
         PathtoPublish: '$(outdir)'
         ArtifactName: 'ARMTemplate'
@@ -56,6 +68,7 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: DownloadBuildArtifacts@1
+      name: 'Download ARM Template from artifact repo'
       inputs:
         artifactName: 'ARMTemplate'
         buildType: 'current'
@@ -63,6 +76,7 @@ stages:
         downloadPath: '$(Build.ArtifactStagingDirectory)'
 
     - task: AzureCLI@2
+      name: 'Deploy ARM template'
       inputs:
         azureSubscription: 'DeployConnection'
         scriptType: 'bash'
@@ -90,6 +104,7 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: DownloadBuildArtifacts@1
+      name: 'Download ARM Template from artifact repo'
       inputs:
         artifactName: 'ARMTemplate'
         buildType: 'current'
@@ -97,6 +112,7 @@ stages:
         downloadPath: '$(Build.ArtifactStagingDirectory)'
         
     - task: AzureResourceManagerTemplateDeployment@3
+      name: 'Deploy ARM template'
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: 'DeployConnection'
@@ -129,6 +145,7 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: DownloadBuildArtifacts@1
+      name: 'Download ARM Template from artifact repo'
       inputs:
         artifactName: 'ARMTemplate'
         buildType: 'current'
@@ -136,6 +153,7 @@ stages:
         downloadPath: '$(Build.ArtifactStagingDirectory)'
 
     - task: AzureCLI@2
+      name: 'Deploy ARM template'
       inputs:
         azureSubscription: 'DeployConnection'
         scriptType: 'bash'
