@@ -22,7 +22,13 @@ jobs:
 
       - name: Install BICEP module
         run: az bicep install
-        
+      
+      - name: Validate BICEP template
+        run: |
+          mkdir ${{ env.BUILD_OUTPUT_PATH }}
+          cd ${{ env.BUILD_OUTPUT_PATH }}
+          az bicep validate --file '${{ env.BICEP_PROJECT_PATH }}/${{ env.BICEP_MAIN_TEMPLATE }}'
+      
       - name: Build BICEP template
         run: |
           mkdir ${{ env.BUILD_OUTPUT_PATH }}
