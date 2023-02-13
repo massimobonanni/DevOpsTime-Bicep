@@ -95,6 +95,7 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         downloadPath: '$(Build.ArtifactStagingDirectory)'
+        
     - task: AzureResourceManagerTemplateDeployment@3
       inputs:
         deploymentScope: 'Resource Group'
