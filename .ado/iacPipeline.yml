@@ -70,7 +70,17 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
+          az deployment group validate \
+            --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' \
+            --resource-group $(resourceGroupName) \
+            --parameters environmentType=$(deployEnvironmentType)
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'DeployConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
           az deployment group create \
             --name '$(Build.BuildId)' \
             --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' \
