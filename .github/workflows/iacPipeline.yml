@@ -8,7 +8,6 @@ on:
     paths-ignore:
       - ".ado/*"
 
-      
 env: 
   BICEP_PROJECT_PATH: '${{ github.workspace }}/03 - Modules'
   BICEP_MAIN_TEMPLATE: '03-main.bicep'
@@ -73,6 +72,8 @@ jobs:
       
       - name: Validate ARM Template deployment
         run: |
+          ls ${{ env.BUILD_OUTPUT_PATH }}
+          echo '${{ env.BUILD_OUTPUT_PATH }}/main.json'
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \ 
             --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
