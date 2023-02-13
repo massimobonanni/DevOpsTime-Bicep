@@ -3,6 +3,10 @@ name: CI/CD on IaC
 on:
   workflow_dispatch:
   push:
+    branches:
+      - "main"
+    paths-ignore:
+      - ".ado/*"
 
       
 env: 
@@ -69,18 +73,16 @@ jobs:
       
       - name: Validate ARM Template deployment
         run: |
-          cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \ 
-            --template-file main.json \
+            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
-          cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group create \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file main.json \
+            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
             --name ${{ env.DEPLOYMENT_NAME }} \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
 
@@ -114,18 +116,16 @@ jobs:
       
       - name: Validate ARM Template
         run: |
-          cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file main.json \
+            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
-          cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group create \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file main.json \
+            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
             --name ${{ env.DEPLOYMENT_NAME }} \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
 
@@ -159,17 +159,15 @@ jobs:
       
       - name: Validate ARM Template
         run: |
-          cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group validate \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file main.json \
+            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
-          cd ${{ env.BUILD_OUTPUT_PATH }} 
           az deployment group create \
             --resource-group ${{ env.RESOURCEGROUP_NAME }} \
-            --template-file main.json \
+            --template-file '${{ env.BUILD_OUTPUT_PATH }}/main.json' \
             --name ${{ env.DEPLOYMENT_NAME }} \
             --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
