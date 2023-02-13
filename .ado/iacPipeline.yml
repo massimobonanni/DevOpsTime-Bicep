@@ -23,16 +23,6 @@ stages:
     
     steps:
     - task: AzureCLI@2
-      name: 'Validate Bicep tamplate'
-      inputs:
-        azureSubscription: $(azureSubscription)
-        scriptType: bash
-        scriptLocation: inlineScript
-        inlineScript: |
-          mkdir $(outdir)
-          az bicep validate --file '$(templatePath)/$(templateFile).bicep'
-
-    - task: AzureCLI@2
       name: 'Build ARM template'
       inputs:
         azureSubscription: $(azureSubscription)
@@ -40,7 +30,9 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           mkdir $(outdir)
-          az bicep build --file '$(templatePath)/$(templateFile).bicep' --outdir '$(outdir)'
+          az bicep build \
+            --file '$(templatePath)/$(templateFile).bicep' \
+            --outdir '$(outdir)'
 
     - task: PublishBuildArtifacts@1
       name: 'Publish ARM template as artifact'
@@ -83,7 +75,11 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
-          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create \
+            --name '$(Build.BuildId)' \
+            --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' \
+            --resource-group $(resourceGroupName) \
+            --parameters environmentType=$(deployEnvironmentType)
 
 - stage: DeployToTest
   variables:
@@ -160,4 +156,8 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           ls '$(Build.ArtifactStagingDirectory)/ARMTemplate'
-          az deployment group create --name '$(Build.BuildId)' --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' --resource-group $(resourceGroupName) --parameters environmentType=$(deployEnvironmentType)
+          az deployment group create \
+            --name '$(Build.BuildId)' \
+            --template-file '$(Build.ArtifactStagingDirectory)/ARMTemplate/$(templateFile).json' \
+            --resource-group $(resourceGroupName) \
+            --parameters environmentType=$(deployEnvironmentType)
