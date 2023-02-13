@@ -6,9 +6,6 @@ trigger:
     exclude: 
      - ".github/*" 
 
-
-  
-
 variables:
   vmImageName: 'ubuntu-latest'
   azureSubscription: 'DeployConnection'
