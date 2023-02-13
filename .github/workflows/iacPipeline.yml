@@ -28,13 +28,16 @@ jobs:
         run: |
           mkdir ${{ env.BUILD_OUTPUT_PATH }}
           cd ${{ env.BUILD_OUTPUT_PATH }}
-          az bicep validate --file '${{ env.BICEP_PROJECT_PATH }}/${{ env.BICEP_MAIN_TEMPLATE }}'
+          az bicep validate \
+            --file '${{ env.BICEP_PROJECT_PATH }}/${{ env.BICEP_MAIN_TEMPLATE }}'
       
       - name: Build BICEP template
         run: |
           mkdir ${{ env.BUILD_OUTPUT_PATH }}
           cd ${{ env.BUILD_OUTPUT_PATH }}
-          az bicep build --file '${{ env.BICEP_PROJECT_PATH }}/${{ env.BICEP_MAIN_TEMPLATE }}' --outfile main.json
+          az bicep build \
+            --file '${{ env.BICEP_PROJECT_PATH }}/${{ env.BICEP_MAIN_TEMPLATE }}' 
+            --outfile main.json
       
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
@@ -74,12 +77,20 @@ jobs:
       - name: Validate ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          az deployment group validate \
+            --resource-group ${{ env.RESOURCEGROUP_NAME }} \ 
+            --template-file main.json \
+            --name ${{ env.DEPLOYMENT_NAME }} \
+            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          az deployment group create \
+            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
+            --template-file main.json \
+            --name ${{ env.DEPLOYMENT_NAME }} \
+            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
 
   deployOnTest:
     runs-on: ubuntu-latest
@@ -112,12 +123,20 @@ jobs:
       - name: Validate ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          az deployment group validate \
+            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
+            --template-file main.json \
+            --name ${{ env.DEPLOYMENT_NAME }} \
+            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          az deployment group create \
+            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
+            --template-file main.json \
+            --name ${{ env.DEPLOYMENT_NAME }} \
+            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
 
   deployOnProduction:
     runs-on: ubuntu-latest
@@ -150,9 +169,17 @@ jobs:
       - name: Validate ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group validate --resource-group ${{ env.RESOURCEGROUP_NAME }} --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          az deployment group validate \
+            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
+            --template-file main.json \
+            --name ${{ env.DEPLOYMENT_NAME }} \
+            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
           
       - name: Deploy ARM Template
         run: |
           cd ${{ env.BUILD_OUTPUT_PATH }} 
-          az deployment group create --resource-group ${{ env.RESOURCEGROUP_NAME }}  --template-file main.json --name ${{ env.DEPLOYMENT_NAME }} --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
+          az deployment group create \
+            --resource-group ${{ env.RESOURCEGROUP_NAME }} \
+            --template-file main.json \
+            --name ${{ env.DEPLOYMENT_NAME }} \
+            --parameters environmentType=${{ env.DEPLOY_ENVIRONMENT_TYPE }}
