@@ -1,6 +1,7 @@
 # Bicep demos for DevOps Time episode
 This repo contains the demos for the DevOps Time episode called "Bicep e DevOps: la coppia vincente nell'IaC su Azure!".
-You can find the recording of the episode <a href="https://www.ugidotnet.org/tv/episodio/3132/DevOps-Time/Bicep-e-DevOps-la-coppia-vincente-nell-IaC-su-Azure" target="_blank">here</a>. The episode is in Italian language.
+You can find the recording of the episode [here](https://www.ugidotnet.org/tv/episodio/3132/DevOps-Time/Bicep-e-DevOps-la-coppia-vincente-nell-IaC-su-Azure).
+The episode is in Italian language.
 
 ## Demo architecture
 The templates create a solution based on the following picture:
@@ -19,10 +20,10 @@ In the `.github/workflow` and `.ado` folders you can find the CI/CD for GitHub a
 
 ### Azure DevOps
 To execute the pipeline, you need to create a Azure DevOps project and setup a pipeline from file retrieving it from GitHub. 
-You can have more info about how to proceed <a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml" target="_blank">here</a>.
+You can have more info about how to proceed [here](https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml).
 
 Then you need to configure a service connection in your Azure DevOps project (called `DeployConnection`) with contributor role in the destination resource groups (variable `resourceGroupName` in the different pipeline stages). 
-You can find more info about how to configure it <a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml" target="_blank">here</a>.
+You can find more info about how to configure it [here](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).
 
 ### GitHub workflow
 To execute the GitHub workflow, you need to use an Azure service principal and store its credential in the GitHub secret called `AZURE_CREDENTIAL`.
@@ -50,4 +51,4 @@ The previous command response is something similar to the following:
 
 
 You need to create the secret in the repo and copy the previous JSON inside it.
-To know how you can create a secret in GitHub repo, follow the tutorial <a href="https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces#adding-secrets-for-a-repository" target="_blank">here</a>.
+To know how you can create a secret in GitHub repo, follow the tutorial [here](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces#adding-secrets-for-a-repository).
