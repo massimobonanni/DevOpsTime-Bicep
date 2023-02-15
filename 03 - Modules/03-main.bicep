@@ -1,5 +1,5 @@
 // ---------------------------------------------------
-// Step 02 - Local modules (scope ResourceGroup)
+// Step 03 - Local modules (scope ResourceGroup)
 // ---------------------------------------------------
 
 // Parameters
